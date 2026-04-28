@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Betting Game</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --success: #10B981;
+            --danger: #EF4444;
+            --bg: #F3F4F6;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 850px;
+        }
+        h1, h2, h3 { text-align: center; }
+        .hidden { display: none !important; }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: 0.2s;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .btn-warning { background: #F59E0B; }
+        .btn:disabled { background: #9CA3AF; cursor: not-allowed; }
+        input[type="text"], input[type="number"], input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .balance-display {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #E5E7EB;
+            vertical-align: middle;
+        }
+        th { background: #F9FAFB; }
+        .role-selector { display: flex; justify-content: space-around; margin-top: 20px;}
+        .bet-controls { display: flex; flex-direction: column; gap: 10px; margin-top: 20px;}
+        .bet-buttons { display: flex; justify-content: space-between; gap: 10px; }
+        .bet-buttons .btn { flex: 1; }
+        .status-msg { text-align: center; font-weight: bold; margin-top: 15px; color: #6B7280; }
+        
+        .adjust-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .adjust-controls input {
+            width: 50px;
+            padding: 5px;
+            margin: 0;
+        }
+        .adjust-controls button {
+            padding: 5px 10px;
+            margin: 0;
+            font-size: 14px;
+        }
+        .student-details { display: flex; gap: 10px; }
+        .student-details input { flex: 1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Grammar Casino</h1>
+
+    <div id="role-screen">
+        <h3>Are you a Student or the Teacher?</h3>
+        <div class="role-selector">
+            <button class="btn" id="btn-select-student">I am a Student</button>
+            <button class="btn btn-danger" id="btn-select-teacher">I am the Teacher</button>
+        </div>
+    </div>
+
+    <div id="teacher-login-screen" class="hidden">
+        <h3>Teacher Access</h3>
+        <input type="password" id="teacher-password" placeholder="Enter teacher password">
+        <button class="btn btn-danger" style="width: 100%;" id="btn-teacher-login">Log In</button>
+        <button class="btn" style="width: 100%; background: #6B7280; margin-top: 10px;" id="btn-teacher-back">Back</button>
+    </div>
+
+    <div id="student-login-screen" class="hidden">
+        <h3>Enter your details to join</h3>
+        <div class="student-details">
+            <input type="text" id="student-class" placeholder="Class (e.g., 6A)">
+            <input type="number" id="student-number" placeholder="Class No.">
+        </div>
+        <input type="text" id="student-name" placeholder="Your Name">
+        <button class="btn" style="width: 100%;" id="btn-student-login">Join Game</button>
+        <button class="btn" style="width: 100%; background: #6B7280; margin-top: 10px;" id="btn-student-back">Back</button>
+    </div>
+
+    <div id="student-dashboard" class="hidden">
+        <h2 id="display-student-name"></h2>
+        <div class="balance-display">Balance: $<span id="display-balance">0</span></div>
+        
+        <div id="betting-section">
+            <h3>Place Your Bet</h3>
+            <label>Amount to bet:</label>
+            <input type="number" id="bet-amount" min="1" placeholder="Enter amount">
+            
+            <div class="bet-buttons">
+                <button class="btn btn-success" id="btn-bet-correct">Bet: CORRECT</button>
+                <button class="btn btn-danger" id="btn-bet-incorrect">Bet: INCORRECT</button>
+            </div>
+        </div>
+        
+        <div id="waiting-section" class="hidden">
+            <div class="status-msg">
+                You bet $<span id="display-my-bet-amount"></span> on <span id="display-my-bet-choice"></span>.<br>
+                Waiting for the teacher to reveal the answer...
+            </div>
+        </div>
+    </div>
+
+    <div id="teacher-dashboard" class="hidden">
+        <h2>Teacher Control Panel</h2>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+            <button class="btn btn-success" id="btn-resolve-correct">Sentence is CORRECT</button>
+            <button class="btn btn-danger" id="btn-resolve-incorrect">Sentence is INCORRECT</button>
+        </div>
+        
+        <button class="btn btn-warning" style="width: 100%; margin-bottom: 10px;" id="btn-reset-game">Reset Everyone to $3</button>
+        <button class="btn btn-danger" style="width: 100%; background: #991B1B;" id="btn-clear-all">🛑 CLEAR ALL STUDENT DATA (New Class)</button>
+
+        <h3>Student Status (<span id="student-count">0</span>)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Balance</th>
+                    <th>Current Bet</th>
+                    <th>Choice</th>
+                    <th>Adjust Balance</th>
+                </tr>
+            </thead>
+            <tbody id="student-table-body">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, writeBatch, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBxpET7_XGaWhiy6wXEeTlNeoWQVXeSazA",
+  authDomain: "betting-system-b98c8.firebaseapp.com",
+  projectId: "betting-system-b98c8",
+  storageBucket: "betting-system-b98c8.firebasestorage.app",
+  messagingSenderId: "104374819863",
+  appId: "1:104374819863:web:438a1adb9d07451d071052",
+  measurementId: "G-KGRP4P5264"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Global variables
+    let currentStudentId = ""; 
+    let currentBalance = 0;
+
+    // DOM Elements
+    const screens = {
+        role: document.getElementById('role-screen'),
+        studentLogin: document.getElementById('student-login-screen'),
+        teacherLogin: document.getElementById('teacher-login-screen'),
+        studentDash: document.getElementById('student-dashboard'),
+        teacherDash: document.getElementById('teacher-dashboard')
+    };
+
+    function showScreen(screenKey) {
+        Object.values(screens).forEach(s => s.classList.add('hidden'));
+        screens[screenKey].classList.remove('hidden');
+    }
+
+    // --- NAVIGATION ---
+    document.getElementById('btn-select-student').addEventListener('click', () => showScreen('studentLogin'));
+    document.getElementById('btn-select-teacher').addEventListener('click', () => showScreen('teacherLogin'));
+    
+    document.getElementById('btn-student-back').addEventListener('click', () => showScreen('role'));
+    document.getElementById('btn-teacher-back').addEventListener('click', () => showScreen('role'));
+
+    // --- TEACHER LOGIN LOGIC ---
+    document.getElementById('btn-teacher-login').addEventListener('click', () => {
+        const pwd = document.getElementById('teacher-password').value;
+        if (pwd === "111018") {
+            showScreen('teacherDash');
+            startTeacherListener();
+        } else {
+            alert("Incorrect password!");
+            document.getElementById('teacher-password').value = ""; 
+        }
+    });
+
+    // --- STUDENT LOGIC ---
+    document.getElementById('btn-student-login').addEventListener('click', async () => {
+        const classInput = document.getElementById('student-class').value.trim().toUpperCase();
+        const numberInput = document.getElementById('student-number').value.trim();
+        const nameInput = document.getElementById('student-name').value.trim();
+
+        if (!classInput || !numberInput || !nameInput) {
+            return alert("Please fill in your Class, Class Number, and Name.");
+        }
+
+        currentStudentId = `${classInput}-${numberInput}-${nameInput}`;
+
+        const studentRef = doc(db, "students", currentStudentId);
+        const docSnap = await getDoc(studentRef);
+
+        if (!docSnap.exists()) {
+            await setDoc(studentRef, {
+                id: currentStudentId,
+                className: classInput,
+                classNumber: parseInt(numberInput),
+                name: nameInput,
+                balance: 3,
+                currentBet: 0,
+                betChoice: null
+            });
+        }
+        
+        document.getElementById('display-student-name').innerText = `${classInput} #${numberInput} - ${nameInput}`;
+        showScreen('studentDash');
+        startStudentListener(studentRef);
+    });
+
+    function startStudentListener(studentRef) {
+        onSnapshot(studentRef, (doc) => {
+            if (!doc.exists()) {
+                // If teacher clears database, return student to login screen
+                alert("The teacher has cleared the game data.");
+                showScreen('role');
+                return;
+            }
+
+            const data = doc.data();
+            currentBalance = data.balance;
+            document.getElementById('display-balance').innerText = currentBalance;
+
+            if (data.currentBet > 0) {
+                document.getElementById('betting-section').classList.add('hidden');
+                document.getElementById('waiting-section').classList.remove('hidden');
+                document.getElementById('display-my-bet-amount').innerText = data.currentBet;
+                document.getElementById('display-my-bet-choice').innerText = data.betChoice.toUpperCase();
+            } else {
+                document.getElementById('betting-section').classList.remove('hidden');
+                document.getElementById('waiting-section').classList.add('hidden');
+                document.getElementById('bet-amount').value = "";
+            }
+        });
+    }
+
+    async function placeBet(choice) {
+        const amount = parseInt(document.getElementById('bet-amount').value);
+        if (isNaN(amount) || amount <= 0) return alert("Enter a valid bet amount.");
+        if (amount > currentBalance) return alert("You don't have enough money!");
+
+        const studentRef = doc(db, "students", currentStudentId);
+        
+        await setDoc(studentRef, {
+            balance: currentBalance - amount,
+            currentBet: amount,
+            betChoice: choice
+        }, { merge: true });
+    }
+
+    document.getElementById('btn-bet-correct').addEventListener('click', () => placeBet('correct'));
+    document.getElementById('btn-bet-incorrect').addEventListener('click', () => placeBet('incorrect'));
+
+    // --- TEACHER LOGIC ---
+    function startTeacherListener() {
+        const studentsRef = collection(db, "students");
+        onSnapshot(studentsRef, (snapshot) => {
+            const tbody = document.getElementById('student-table-body');
+            tbody.innerHTML = ""; 
+            
+            let studentsData = [];
+            snapshot.forEach((doc) => {
+                studentsData.push({ dbId: doc.id, ...doc.data() });
+            });
+
+            studentsData.sort((a, b) => {
+                if (a.className !== b.className) {
+                    return a.className.localeCompare(b.className);
+                }
+                return a.classNumber - b.classNumber;
+            });
+
+            document.getElementById('student-count').innerText = studentsData.length;
+
+            studentsData.forEach((data) => {
+                const safeHtmlId = data.dbId.replace(/[^a-zA-Z0-9-]/g, '-'); 
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${data.className}</strong></td>
+                    <td>#${data.classNumber}</td>
+                    <td>${data.name}</td>
+                    <td>$${data.balance}</td>
+                    <td>${data.currentBet > 0 ? '$' + data.currentBet : 'Waiting...'}</td>
+                    <td>
+                        <span style="color: ${data.betChoice === 'correct' ? 'green' : (data.betChoice === 'incorrect' ? 'red' : 'gray')}">
+                            ${data.betChoice ? data.betChoice.toUpperCase() : '-'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="adjust-controls">
+                            <input type="number" id="adjust-${safeHtmlId}" value="1" min="1">
+                            <button class="btn btn-success" data-action="add" data-studentid="${data.dbId}">+</button>
+                            <button class="btn btn-danger" data-action="sub" data-studentid="${data.dbId}">-</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+    }
+
+    document.getElementById('student-table-body').addEventListener('click', async (e) => {
+        const target = e.target;
+        
+        if (target.tagName === 'BUTTON' && target.hasAttribute('data-action')) {
+            const action = target.getAttribute('data-action');
+            const studentId = target.getAttribute('data-studentid');
+            const safeHtmlId = studentId.replace(/[^a-zA-Z0-9-]/g, '-');
+            
+            const inputEl = document.getElementById(`adjust-${safeHtmlId}`);
+            const amount = parseInt(inputEl.value);
+            
+            if (isNaN(amount) || amount <= 0) {
+                return alert("Please enter a valid amount to adjust.");
+            }
+
+            const studentRef = doc(db, "students", studentId);
+            const changeAmount = action === 'add' ? amount : -amount;
+
+            try {
+                await updateDoc(studentRef, {
+                    balance: increment(changeAmount)
+                });
+            } catch (error) {
+                console.error("Error updating balance:", error);
+                alert("Could not update balance.");
+            }
+        }
+    });
+
+    async function resolveRound(actualAnswer) {
+        if (!confirm(`Are you sure the sentence was ${actualAnswer.toUpperCase()}?`)) return;
+
+        const studentsRef = collection(db, "students");
+        const snapshot = await getDocs(studentsRef);
+        const batch = writeBatch(db);
+
+        snapshot.forEach((studentDoc) => {
+            const data = studentDoc.data();
+            const ref = doc(db, "students", studentDoc.id);
+            
+            let newBalance = data.balance;
+            
+            if (data.currentBet > 0 && data.betChoice === actualAnswer) {
+                newBalance += (data.currentBet * 2);
+            }
+
+            batch.update(ref, {
+                balance: newBalance,
+                currentBet: 0,
+                betChoice: null
+            });
+        });
+
+        await batch.commit();
+    }
+
+    document.getElementById('btn-resolve-correct').addEventListener('click', () => resolveRound('correct'));
+    document.getElementById('btn-resolve-incorrect').addEventListener('click', () => resolveRound('incorrect'));
+
+    document.getElementById('btn-reset-game').addEventListener('click', async () => {
+        if (!confirm("This will erase all current bets and reset everyone to $3. Are you sure?")) return;
+        
+        const studentsRef = collection(db, "students");
+        const snapshot = await getDocs(studentsRef);
+        const batch = writeBatch(db);
+
+        snapshot.forEach((studentDoc) => {
+            const ref = doc(db, "students", studentDoc.id);
+            batch.update(ref, {
+                balance: 3,
+                currentBet: 0,
+                betChoice: null
+            });
+        });
+
+        await batch.commit();
+    });
+
+    // NEW: Clear all student data from the database
+    document.getElementById('btn-clear-all').addEventListener('click', async () => {
+        const confirmClear = prompt("WARNING: This will permanently kick all students and delete their data so a new class can play. \n\nType 'DELETE' to confirm:");
+        
+        if (confirmClear === "DELETE") {
+            try {
+                const studentsRef = collection(db, "students");
+                const snapshot = await getDocs(studentsRef);
+                const batch = writeBatch(db);
+
+                snapshot.forEach((studentDoc) => {
+                    const ref = doc(db, "students", studentDoc.id);
+                    batch.delete(ref); // Deletes the entire document
+                });
+
+                await batch.commit();
+                alert("All student data successfully cleared.");
+            } catch (error) {
+                console.error("Error clearing database:", error);
+                alert("Something went wrong while trying to clear the database.");
+            }
+        } else if (confirmClear !== null) {
+            alert("Clear cancelled. You did not type 'DELETE'.");
+        }
+    });
+</script>
+
+</body>
+</html>
