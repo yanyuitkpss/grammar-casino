@@ -294,17 +294,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, writeBatch, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-    // ==========================================
-    // ⚠️ REPLACE THIS WITH YOUR FIREBASE CONFIG
-    // ==========================================
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
+  apiKey: "AIzaSyBxpET7_XGaWhiy6wXEeTlNeoWQVXeSazA",
+  authDomain: "betting-system-b98c8.firebaseapp.com",
+  projectId: "betting-system-b98c8",
+  storageBucket: "betting-system-b98c8.firebasestorage.app",
+  messagingSenderId: "104374819863",
+  appId: "1:104374819863:web:438a1adb9d07451d071052",
+  measurementId: "G-KGRP4P5264"
+};
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
