@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Casino | 語法賭城</title>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --neon-pink: #FF007F;
+            --neon-blue: #00F3FF;
+            --bg-dark: #0B0C10;
+            --panel-bg: rgba(31, 40, 51, 0.85);
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 0%, #2b1331 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, #0d2136 0%, transparent 50%);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* 賭場霓虹燈標題 */
+        .casino-title {
+            font-family: 'Righteous', cursive;
+            font-size: 3.5rem;
+            text-align: center;
+            margin: 0 0 10px 0;
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px var(--gold),
+                0 0 40px var(--gold),
+                0 0 80px var(--dark-gold);
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--gold), 0 0 40px var(--gold), 0 0 80px var(--dark-gold); }
+            100% { text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px var(--gold), 0 0 20px var(--gold), 0 0 40px var(--dark-gold); }
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        /* 玻璃透視感面板 */
+        .container {
+            background: var(--panel-bg);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 850px;
+            backdrop-filter: blur(10px);
+        }
+
+        h2, h3 { 
+            text-align: center; 
+            color: var(--gold);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* 賭場風格按鈕 */
+        .btn {
+            background: linear-gradient(145deg, #1f1f1f, #333);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+
+        .btn:hover { 
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 15px var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger { 
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+        .btn-danger:hover {
+            background: var(--neon-pink);
+            color: #fff;
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        .btn-success {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+        }
+        .btn-success:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        /* 輸入框樣式 */
+        input[type="text"], input[type="number"], input[type="password"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--gold);
+            color: #fff;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        /* 餘額顯示 (大獎金風格) */
+        .balance-display {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px dashed var(--gold);
+        }
+
+        /* 表格樣式改為暗色系 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(0,0,0,0.4);
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            vertical-align: middle;
+        }
+        th { 
+            background: rgba(255, 215, 0, 0.1); 
+            color: var(--gold);
+        }
+
+        .role-selector { display: flex; justify-content: space-around; margin-top: 30px;}
+        .student-details { display: flex; gap: 10px; }
+        .student-details input { flex: 1; }
+        .bet-buttons { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px;}
+        .bet-buttons .btn { flex: 1; padding: 20px; font-size: 20px;}
+        
+        .status-msg { 
+            text-align: center; 
+            font-size: 1.2rem;
+            margin-top: 20px; 
+            color: #fff;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .adjust-controls { display: flex; align-items: center; gap: 5px; }
+        .adjust-controls input { width: 50px; padding: 5px; margin: 0; text-align: center;}
+        .adjust-controls button { padding: 5px 10px; margin: 0; font-size: 14px; }
+        
+        /* 裝飾圖標 */
+        .decor { font-size: 24px; vertical-align: middle; margin: 0 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="casino-title">🎰 GRAMMAR CASINO 🎰</h1>
+    <div class="subtitle">Place Your Bets. Test Your English.</div>
+
+    <div id="role-screen">
+        <h3>Choose Your Table</h3>
+        <div class="role-selector">
+            <button class="btn btn-success" id="btn-select-student" style="padding: 20px 40px;">
+                <span class="decor">🃏</span> I am a Player (Student)
+            </button>
+            <button class="btn btn-danger" id="btn-select-teacher" style="padding: 20px 40px;">
+                <span class="decor">👔</span> Casino Dealer (Teacher)
+            </button>
+        </div>
+    </div>
+
+    <div id="teacher-login-screen" class="hidden">
+        <h3>Dealer Access</h3>
+        <input type="password" id="teacher-password" placeholder="Enter security code...">
+        <button class="btn btn-danger" style="width: 100%;" id="btn-teacher-login">Unlock Table</button>
+        <button class="btn" style="width: 100%; margin-top: 10px; border-color: gray; color: gray;" id="btn-teacher-back">Leave Table</button>
+    </div>
+
+    <div id="student-login-screen" class="hidden">
+        <h3>Player Registration</h3>
+        <div class="student-details">
+            <input type="text" id="student-class" placeholder="Class (e.g., 6A)">
+            <input type="number" id="student-number" placeholder="No.">
+        </div>
+        <input type="text" id="student-name" placeholder="Player Name">
+        <button class="btn btn-success" style="width: 100%;" id="btn-student-login">Join The Game 💰</button>
+        <button class="btn" style="width: 100%; margin-top: 10px; border-color: gray; color: gray;" id="btn-student-back">Back to Lobby</button>
+    </div>
+
+    <div id="student-dashboard" class="hidden">
+        <h2 id="display-student-name"></h2>
+        <div class="balance-display">CHIPS: $<span id="display-balance">0</span></div>
+        
+        <div id="betting-section">
+            <h3 style="color: var(--neon-blue);">Place Your Bet</h3>
+            <label>Amount to bet:</label>
+            <input type="number" id="bet-amount" min="1" placeholder="Enter chips amount">
+            
+            <div class="bet-buttons">
+                <button class="btn btn-success" id="btn-bet-correct">✅ CORRECT</button>
+                <button class="btn btn-danger" id="btn-bet-incorrect">❌ INCORRECT</button>
+            </div>
+        </div>
+        
+        <div id="waiting-section" class="hidden">
+            <div class="status-msg">
+                🎲 You bet <strong>$<span id="display-my-bet-amount"></span></strong> on <strong><span id="display-my-bet-choice"></span></strong>.<br><br>
+                <small>Waiting for the Dealer to reveal the answer...</small>
+            </div>
+        </div>
+    </div>
+
+    <div id="teacher-dashboard" class="hidden">
+        <h2>VIP Dealer Panel</h2>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+            <button class="btn btn-success" id="btn-resolve-correct">Reveal: CORRECT ✅</button>
+            <button class="btn btn-danger" id="btn-resolve-incorrect">Reveal: INCORRECT ❌</button>
+        </div>
+        
+        <button class="btn" style="width: 100%; margin-bottom: 10px; color: #fff;" id="btn-reset-game">Reset Everyone to $3</button>
+        <button class="btn" style="width: 100%; background: #660000; border-color: #ff0000; color: #fff;" id="btn-clear-all">🛑 KICK ALL PLAYERS (Clear Database)</button>
+
+        <h3 style="margin-top: 30px;">Players at Table (<span id="student-count">0</span>)</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>No.</th>
+                        <th>Name</th>
+                        <th>Chips</th>
+                        <th>Current Bet</th>
+                        <th>Choice</th>
+                        <th>Give/Take</th>
+                    </tr>
+                </thead>
+                <tbody id="student-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, writeBatch, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+    // ==========================================
+    // ⚠️ REPLACE THIS WITH YOUR FIREBASE CONFIG
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Global variables
+    let currentStudentId = ""; 
+    let currentBalance = 0;
+
+    // DOM Elements
+    const screens = {
+        role: document.getElementById('role-screen'),
+        studentLogin: document.getElementById('student-login-screen'),
+        teacherLogin: document.getElementById('teacher-login-screen'),
+        studentDash: document.getElementById('student-dashboard'),
+        teacherDash: document.getElementById('teacher-dashboard')
+    };
+
+    function showScreen(screenKey) {
+        Object.values(screens).forEach(s => s.classList.add('hidden'));
+        screens[screenKey].classList.remove('hidden');
+    }
+
+    // --- NAVIGATION ---
+    document.getElementById('btn-select-student').addEventListener('click', () => showScreen('studentLogin'));
+    document.getElementById('btn-select-teacher').addEventListener('click', () => showScreen('teacherLogin'));
+    
+    document.getElementById('btn-student-back').addEventListener('click', () => showScreen('role'));
+    document.getElementById('btn-teacher-back').addEventListener('click', () => showScreen('role'));
+
+    // --- TEACHER LOGIN LOGIC ---
+    document.getElementById('btn-teacher-login').addEventListener('click', () => {
+        const pwd = document.getElementById('teacher-password').value;
+        if (pwd === "111018") {
+            showScreen('teacherDash');
+            startTeacherListener();
+        } else {
+            alert("Incorrect password!");
+            document.getElementById('teacher-password').value = ""; 
+        }
+    });
+
+    // --- STUDENT LOGIC ---
+    document.getElementById('btn-student-login').addEventListener('click', async () => {
+        const classInput = document.getElementById('student-class').value.trim().toUpperCase();
+        const numberInput = document.getElementById('student-number').value.trim();
+        const nameInput = document.getElementById('student-name').value.trim();
+
+        if (!classInput || !numberInput || !nameInput) {
+            return alert("Please fill in your Class, Class Number, and Name.");
+        }
+
+        currentStudentId = `${classInput}-${numberInput}-${nameInput}`;
+
+        const studentRef = doc(db, "students", currentStudentId);
+        const docSnap = await getDoc(studentRef);
+
+        if (!docSnap.exists()) {
+            await setDoc(studentRef, {
+                id: currentStudentId,
+                className: classInput,
+                classNumber: parseInt(numberInput),
+                name: nameInput,
+                balance: 3,
+                currentBet: 0,
+                betChoice: null
+            });
+        }
+        
+        document.getElementById('display-student-name').innerText = `👤 ${classInput} #${numberInput} - ${nameInput}`;
+        showScreen('studentDash');
+        startStudentListener(studentRef);
+    });
+
+    function startStudentListener(studentRef) {
+        onSnapshot(studentRef, (doc) => {
+            if (!doc.exists()) {
+                alert("The Dealer has cleared the table data.");
+                showScreen('role');
+                return;
+            }
+
+            const data = doc.data();
+            currentBalance = data.balance;
+            document.getElementById('display-balance').innerText = currentBalance;
+
+            if (data.currentBet > 0) {
+                document.getElementById('betting-section').classList.add('hidden');
+                document.getElementById('waiting-section').classList.remove('hidden');
+                document.getElementById('display-my-bet-amount').innerText = data.currentBet;
+                document.getElementById('display-my-bet-choice').innerText = data.betChoice.toUpperCase();
+            } else {
+                document.getElementById('betting-section').classList.remove('hidden');
+                document.getElementById('waiting-section').classList.add('hidden');
+                document.getElementById('bet-amount').value = "";
+            }
+        });
+    }
+
+    async function placeBet(choice) {
+        const amount = parseInt(document.getElementById('bet-amount').value);
+        if (isNaN(amount) || amount <= 0) return alert("Enter a valid bet amount.");
+        if (amount > currentBalance) return alert("You don't have enough chips!");
+
+        const studentRef = doc(db, "students", currentStudentId);
+        
+        await setDoc(studentRef, {
+            balance: currentBalance - amount,
+            currentBet: amount,
+            betChoice: choice
+        }, { merge: true });
+    }
+
+    document.getElementById('btn-bet-correct').addEventListener('click', () => placeBet('correct'));
+    document.getElementById('btn-bet-incorrect').addEventListener('click', () => placeBet('incorrect'));
+
+    // --- TEACHER LOGIC ---
+    function startTeacherListener() {
+        const studentsRef = collection(db, "students");
+        onSnapshot(studentsRef, (snapshot) => {
+            const tbody = document.getElementById('student-table-body');
+            tbody.innerHTML = ""; 
+            
+            let studentsData = [];
+            snapshot.forEach((doc) => {
+                studentsData.push({ dbId: doc.id, ...doc.data() });
+            });
+
+            studentsData.sort((a, b) => {
+                if (a.className !== b.className) {
+                    return a.className.localeCompare(b.className);
+                }
+                return a.classNumber - b.classNumber;
+            });
+
+            document.getElementById('student-count').innerText = studentsData.length;
+
+            studentsData.forEach((data) => {
+                const safeHtmlId = data.dbId.replace(/[^a-zA-Z0-9-]/g, '-'); 
+                
+                let choiceColor = 'gray';
+                if(data.betChoice === 'correct') choiceColor = 'var(--neon-blue)';
+                if(data.betChoice === 'incorrect') choiceColor = 'var(--neon-pink)';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${data.className}</strong></td>
+                    <td>#${data.classNumber}</td>
+                    <td>${data.name}</td>
+                    <td style="color: var(--gold); font-weight: bold;">$${data.balance}</td>
+                    <td>${data.currentBet > 0 ? '$' + data.currentBet : 'Waiting...'}</td>
+                    <td>
+                        <span style="color: ${choiceColor}; font-weight: bold;">
+                            ${data.betChoice ? data.betChoice.toUpperCase() : '-'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="adjust-controls">
+                            <input type="number" id="adjust-${safeHtmlId}" value="1" min="1">
+                            <button class="btn btn-success" data-action="add" data-studentid="${data.dbId}">+</button>
+                            <button class="btn btn-danger" data-action="sub" data-studentid="${data.dbId}">-</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+    }
+
+    document.getElementById('student-table-body').addEventListener('click', async (e) => {
+        const target = e.target;
+        
+        if (target.tagName === 'BUTTON' && target.hasAttribute('data-action')) {
+            const action = target.getAttribute('data-action');
+            const studentId = target.getAttribute('data-studentid');
+            const safeHtmlId = studentId.replace(/[^a-zA-Z0-9-]/g, '-');
+            
+            const inputEl = document.getElementById(`adjust-${safeHtmlId}`);
+            const amount = parseInt(inputEl.value);
+            
+            if (isNaN(amount) || amount <= 0) {
+                return alert("Please enter a valid amount.");
+            }
+
+            const studentRef = doc(db, "students", studentId);
+            const changeAmount = action === 'add' ? amount : -amount;
+
+            try {
+                await updateDoc(studentRef, {
+                    balance: increment(changeAmount)
+                });
+            } catch (error) {
+                console.error("Error updating balance:", error);
+                alert("Could not update balance.");
+            }
+        }
+    });
+
+    async function resolveRound(actualAnswer) {
+        if (!confirm(`Are you sure the sentence was ${actualAnswer.toUpperCase()}?`)) return;
+
+        const studentsRef = collection(db, "students");
+        const snapshot = await getDocs(studentsRef);
+        const batch = writeBatch(db);
+
+        snapshot.forEach((studentDoc) => {
+            const data = studentDoc.data();
+            const ref = doc(db, "students", studentDoc.id);
+            
+            let newBalance = data.balance;
+            
+            if (data.currentBet > 0 && data.betChoice === actualAnswer) {
+                newBalance += (data.currentBet * 2);
+            }
+
+            batch.update(ref, {
+                balance: newBalance,
+                currentBet: 0,
+                betChoice: null
+            });
+        });
+
+        await batch.commit();
+    }
+
+    document.getElementById('btn-resolve-correct').addEventListener('click', () => resolveRound('correct'));
+    document.getElementById('btn-resolve-incorrect').addEventListener('click', () => resolveRound('incorrect'));
+
+    document.getElementById('btn-reset-game').addEventListener('click', async () => {
+        if (!confirm("This will reset everyone's chips back to $3. Are you sure?")) return;
+        
+        const studentsRef = collection(db, "students");
+        const snapshot = await getDocs(studentsRef);
+        const batch = writeBatch(db);
+
+        snapshot.forEach((studentDoc) => {
+            const ref = doc(db, "students", studentDoc.id);
+            batch.update(ref, {
+                balance: 3,
+                currentBet: 0,
+                betChoice: null
+            });
+        });
+
+        await batch.commit();
+    });
+
+    document.getElementById('btn-clear-all').addEventListener('click', async () => {
+        const confirmClear = prompt("WARNING: Kick all players and delete data? \n\nType 'DELETE' to confirm:");
+        
+        if (confirmClear === "DELETE") {
+            try {
+                const studentsRef = collection(db, "students");
+                const snapshot = await getDocs(studentsRef);
+                const batch = writeBatch(db);
+
+                snapshot.forEach((studentDoc) => {
+                    const ref = doc(db, "students", studentDoc.id);
+                    batch.delete(ref); 
+                });
+
+                await batch.commit();
+                alert("All player data successfully cleared.");
+            } catch (error) {
+                console.error("Error clearing database:", error);
+                alert("Something went wrong.");
+            }
+        } else if (confirmClear !== null) {
+            alert("Action cancelled.");
+        }
+    });
+</script>
+
+</body>
+</html>
